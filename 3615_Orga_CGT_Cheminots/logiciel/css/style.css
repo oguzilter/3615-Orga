@@ -1,0 +1,206 @@
+:root {
+    --rouge-cgt: #CC0000;
+    --jaune-cgt: #FFCC00;
+    --noir: #111111;
+    --blanc: #F4F4F4;
+    --fond-transparent: rgba(204, 0, 0, 0.05);
+}
+
+body {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--blanc);
+    color: var(--noir);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.bandeau-cgt {
+    background-color: var(--rouge-cgt);
+    color: var(--jaune-cgt);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid var(--noir);
+}
+
+.bandeau-cgt h1 {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: 2px;
+}
+
+.version-badge {
+    background-color: var(--noir);
+    color: var(--jaune-cgt);
+    padding: 5px 10px;
+    font-weight: bold;
+    border: 1px solid var(--jaune-cgt);
+}
+
+.container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.menu-urss {
+    width: 250px;
+    background-color: var(--noir);
+    border-right: 4px solid var(--rouge-cgt);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.bouton-menu {
+    background-color: var(--rouge-cgt);
+    color: var(--blanc);
+    border: 1px solid var(--noir);
+    padding: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.bouton-menu:hover, .bouton-menu.actif {
+    background-color: var(--jaune-cgt);
+    color: var(--noir);
+    border-color: var(--rouge-cgt);
+    padding-left: 20px;
+}
+
+.bouton-menu:disabled {
+    background-color: #555555;
+    color: #888888;
+    cursor: not-allowed;
+    border-color: #000000;
+    opacity: 0.7;
+}
+
+.zone-contenu {
+    flex: 1;
+    padding: 20px 40px;
+    overflow-y: auto;
+    background-color: var(--blanc);
+}
+
+.vue-centree {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.logo-CGT {
+    max-width: 100%;
+    max-height: calc(100vh - 100px); 
+    object-fit: contain;
+}
+
+.panneau-infos {
+    background-color: var(--fond-transparent);
+    border-left: 4px solid var(--rouge-cgt);
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+
+.panneau-infos h3 {
+    color: var(--rouge-cgt);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style-type: square;
+    padding-left: 20px;
+    margin: 0;
+}
+
+li {
+    margin-bottom: 8px;
+}
+
+.bouton-action {
+    background-color: var(--noir);
+    color: var(--jaune-cgt);
+    border: 2px solid var(--jaune-cgt);
+    padding: 10px 15px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.bouton-action:hover { 
+    background-color: var(--jaune-cgt); 
+    color: var(--noir); 
+    border-color: var(--noir); 
+}
+
+.bouton-colonne {
+    background-color: var(--blanc);
+    color: var(--noir);
+    border: 1px solid var(--noir);
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    opacity: 0.5;
+}
+
+.bouton-colonne.actif {
+    background-color: var(--rouge-cgt);
+    color: var(--blanc);
+    border-color: var(--noir);
+    opacity: 1;
+}
+
+.conteneur-table {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 2px solid var(--noir);
+    background-color: var(--fond-transparent);
+    max-height: 60vh;
+}
+
+.table-cgt {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.table-cgt th {
+    background-color: var(--noir);
+    color: var(--jaune-cgt);
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #444;
+    position: sticky;
+    top: 0;
+}
+
+.table-cgt th:hover { 
+    background-color: #333; 
+}
+
+.table-cgt td {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+}
+
+.table-cgt tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-cgt tbody tr:hover {
+    background-color: rgba(204, 0, 0, 0.1);
+}

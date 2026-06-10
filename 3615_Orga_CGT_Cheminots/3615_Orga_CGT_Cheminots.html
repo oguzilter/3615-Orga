@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3615 Orga CGT Cheminots</title>
+    <link rel="stylesheet" href="logiciel/css/style.css">
+</head>
+<body>
+    <header class="bandeau-cgt">
+        <h1>3615 ORGA CGT CHEMINOTS</h1>
+        <div id="version-display" class="version-badge"></div>
+    </header>
+
+    <div class="container">
+        <nav id="menu-lateral" class="menu-urss"></nav>
+
+        <main id="zone-travail" class="zone-contenu">
+            <div id="accueil" class="vue-section vue-centree" style="flex-direction: column;">
+                <div id="zone-maj" class="alerte-maj" style="display: none;">
+                    <h3>NOUVELLE VERSION DISPONIBLE : <span id="nouvelle-version-texte"></span></h3>
+                    <a id="lien-telechargement-maj" href="#" target="_blank" class="bouton-action bouton-maj">TÉLÉCHARGER</a>
+                </div>
+                <img src="logiciel/medias/logo_cgt_cdw.gif" alt="Logo CGT" class="logo-CGT">
+            </div>
+            
+            <div id="infos" class="vue-section" style="display: none;">
+                <h2>INFORMATIONS ET VERSIONS</h2>
+                <div class="panneau-infos"><h3>CONTACT</h3><p><strong id="contact-email"></strong></p></div>
+                <div class="panneau-infos"><h3>HISTORIQUE</h3><ul id="liste-historique"></ul></div>
+                <div class="panneau-infos"><h3>À VENIR</h3><ul id="liste-majs"></ul></div>
+            </div>
+
+            <div id="util_excel" class="vue-section" style="display: none;"></div>
+            <div id="util_alertes_ecarts" class="vue-section" style="display: none;"></div>
+            <div id="util_alertes_mails_pros" class="vue-section" style="display: none;"></div>
+            <div id="util_alertes_retraites" class="vue-section" style="display: none;"></div>
+            <div id="util_point_orga" class="vue-section" style="display: none;"></div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="logiciel/config/menu.js"></script>
+    <script src="logiciel/utilitaires/util_excel.js"></script>
+    <script src="logiciel/utilitaires/util_point_orga.js"></script>
+    <script src="logiciel/utilitaires/util_alertes_ecarts.js"></script>
+    <script src="logiciel/utilitaires/util_alertes_retraites.js"></script>
+    <script src="logiciel/utilitaires/util_alertes_mails_pros.js"></script>
+    <script src="logiciel/config/infos.js"></script>
+    <script src="logiciel/config/main.js"></script>
+</body>
+</html>
