@@ -1,0 +1,17 @@
+:root {
+    --couleur-primaire: #E3004B;
+    --couleur-secondaire: #B4C800;
+    --noir: #4A0018;
+    --blanc-pur: #FFFFFF;
+    --fond-page: #FDF8F9;
+    --texte-bandeau: #FFFFFF;
+    --bordure-bandeau: #B4C800;
+    --bordure-menu: #B4C800;
+    --fond-codage: #E3004B;
+    --texte-codage: #FFFFFF;
+    --bordure-logo-oncf: #E3004B;
+    --vert-export: #8EA000;
+    --gris-inactif: #8F6A75;
+    --fond-transparent: rgba(227, 0, 75, 0.05);
+    --fond-hover-table: rgba(180, 200, 0, 0.18);
+}

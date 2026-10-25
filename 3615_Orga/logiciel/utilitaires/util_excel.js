@@ -2,37 +2,43 @@ const UtilitaireExcel = {
     sources: {
         lorga: { donnees: [], enTetes: [] },
         cogitiel: { donnees: [], enTetes: [] },
-        cogetise: { donnees: [], enTetes: [] }
+        cogetise: { donnees: [], enTetes: [] },
+        oncf: { donnees: [], enTetes: [] }
     },
     interfaceGeneree: false,
 
     genererInterface: function(conteneurId) {
         if (this.interfaceGeneree) return;
         const conteneur = document.getElementById(conteneurId);
-        
+
         conteneur.innerHTML = `
-            <h2>IMPORT DES FICHIERS EXCEL DE LORGA, COGITIEL ET COGETISE</h2>
-            <div class="panneau-infos" style="display:flex; flex-direction:column; gap:10px;">
-                
-                <div style="display:flex; align-items:center; gap:10px;">
+            <h2>IMPORT DES FICHIERS EXCEL (LORGA, COGITIEL, COGETISE ET ONCF)</h2>
+            <div class="panneau-infos panneau-import">
+
+                <div class="ligne-import">
                     <label for="input-lorga" class="bouton-action">CHARGER LORGA</label>
-                    <input type="file" id="input-lorga" accept=".xlsx, .xls" style="display:none;">
-                    <span id="statut-lorga" style="font-weight:bold; color:gray;">Aucun fichier</span>
+                    <input type="file" id="input-lorga" accept=".xlsx, .xls" class="input-fichier-cache">
+                    <span id="statut-lorga" class="statut-fichier">Aucun fichier</span>
                 </div>
 
-                <div style="display:flex; align-items:center; gap:10px;">
+                <div class="ligne-import">
                     <label for="input-cogitiel" class="bouton-action">CHARGER COGITIEL</label>
-                    <input type="file" id="input-cogitiel" accept=".xlsx, .xls" style="display:none;">
-                    <span id="statut-cogitiel" style="font-weight:bold; color:gray;">Aucun fichier</span>
+                    <input type="file" id="input-cogitiel" accept=".xlsx, .xls" class="input-fichier-cache">
+                    <span id="statut-cogitiel" class="statut-fichier">Aucun fichier</span>
                 </div>
 
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="bouton-action" style="background-color:gray; cursor:not-allowed;" disabled>CHARGER COGETISE</button>
-                    <span style="color:gray; font-size:0.8em;">(Indisponible)</span>
+                <div class="ligne-import">
+                    <button class="bouton-action" disabled title="Fonctionnalité bientôt disponible camarade">CHARGER COGETISE</button>
+                    <span class="texte-indisponible">(Indisponible)</span>
                 </div>
 
-                <div style="margin-top:10px;">
-                    <button id="btn-vider" class="bouton-action" style="background-color:var(--rouge-cgt);">VIDER TOUT</button>
+                <div class="ligne-import">
+                    <button class="bouton-action" disabled title="Fonctionnalité bientôt disponible camarade">CHARGER ONCF</button>
+                    <span class="texte-indisponible">(Indisponible)</span>
+                </div>
+
+                <div class="zone-vider">
+                    <button id="btn-vider" class="bouton-action bouton-danger">VIDER TOUT</button>
                 </div>
             </div>
         `;
@@ -40,7 +46,7 @@ const UtilitaireExcel = {
         document.getElementById('input-lorga').addEventListener('change', (e) => this.chargerFichier('lorga', e));
         document.getElementById('input-cogitiel').addEventListener('change', (e) => this.chargerFichier('cogitiel', e));
         document.getElementById('btn-vider').addEventListener('click', () => this.viderTout());
-        
+
         this.interfaceGeneree = true;
     },
 
@@ -54,14 +60,17 @@ const UtilitaireExcel = {
             const classeur = XLSX.read(data, { type: 'array' });
             const feuille = classeur.Sheets[classeur.SheetNames[0]];
             const donnees = XLSX.utils.sheet_to_json(feuille, { header: 1 });
-            
+
             if (donnees.length > 0) {
                 const s = this.sources[sourceKey];
                 s.enTetes = donnees[0];
                 s.donnees = donnees.slice(1).filter(l => l.length > 0);
-                
-                document.getElementById(`statut-${sourceKey}`).innerText = `${s.donnees.length} syndiqués chargés`;
-                document.getElementById(`statut-${sourceKey}`).style.color = "var(--rouge-cgt)";
+
+                const statutEl = document.getElementById(`statut-${sourceKey}`);
+                if (statutEl) {
+                    statutEl.innerText = `${s.donnees.length} syndiqués chargés`;
+                    statutEl.classList.add('charge');
+                }
             }
         };
         lecteur.readAsArrayBuffer(fichier);
@@ -71,14 +80,16 @@ const UtilitaireExcel = {
         Object.keys(this.sources).forEach(key => {
             this.sources[key].donnees = [];
             this.sources[key].enTetes = [];
-            
+
             const statutEl = document.getElementById(`statut-${key}`);
             if (statutEl) {
                 statutEl.innerText = "Aucun fichier";
-                statutEl.style.color = "gray";
+                statutEl.classList.remove('charge');
             }
         });
-        document.getElementById('input-lorga').value = '';
-        document.getElementById('input-cogitiel').value = '';
+        const inputLorga = document.getElementById('input-lorga');
+        const inputCogitiel = document.getElementById('input-cogitiel');
+        if (inputLorga) inputLorga.value = '';
+        if (inputCogitiel) inputCogitiel.value = '';
     }
 };

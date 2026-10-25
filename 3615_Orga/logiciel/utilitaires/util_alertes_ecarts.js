@@ -24,26 +24,50 @@ const UtilitaireAlertesEcarts = {
     genererInterface: function(conteneurId) {
         if (this.interfaceGeneree) return;
         const conteneur = document.getElementById(conteneurId);
+        if (!conteneur) return;
+
         conteneur.innerHTML = `
-            <h2>ANALYSE DES ECARTS D'INFORMATIONS (LORGA, COGITIEL et COGETISE)</h2>
-            <div style="margin-bottom:15px; display:flex; gap:10px;">
-                <button onclick="UtilitaireAlertesEcarts.lancerAnalyse()" class="bouton-action">LANCER L'ANALYSE</button>
-                <button onclick="UtilitaireAlertesEcarts.exporterExcel()" class="bouton-action" style="background-color:#28a745;">EXPORT EXCEL (.csv)</button>
+            <h2>ANALYSE DES ÉCARTS D'INFORMATIONS (LORGA, COGITIEL ET COGETISE)</h2>
+            <div class="barre-actions">
+                <div class="groupe-actions-gauche">
+                    <button onclick="UtilitaireAlertesEcarts.lancerAnalyse()" class="bouton-action">LANCER L'ANALYSE</button>
+                    <button id="btn-fullscreen-ecarts" onclick="UtilitaireAlertesEcarts.basculerPleinEcran()" class="bouton-action">PLEIN ÉCRAN</button>
+                </div>
+                <div class="groupe-actions-droite">
+                    <button onclick="UtilitaireAlertesEcarts.exporterExcel()" class="bouton-action bouton-export">EXPORT EXCEL (.csv)</button>
+                </div>
             </div>
-            <div id="statut-analyse" style="margin-bottom:10px; font-weight:bold;"></div>
-            <table id="table-ecarts" class="table-cgt" style="width:100%; cursor:pointer;">
-                <thead>
-                    <tr onclick="UtilitaireAlertesEcarts.trierTable(event)">
-                        <th data-col="0">AGENT ⬍</th>
-                        <th data-col="1">ÉCART ⬍</th>
-                        <th data-col="2">VALEUR LORGA ⬍</th>
-                        <th data-col="3">VALEUR COGITIEL ⬍</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body-ecarts"></tbody>
-            </table>
+            <div id="statut-analyse-ecarts" class="statut-analyse"></div>
+            <div id="conteneur-table-ecarts" class="conteneur-table">
+                <table id="table-ecarts" class="table-cgt">
+                    <thead>
+                        <tr onclick="UtilitaireAlertesEcarts.trierTable(event)">
+                            <th data-col="0">CAMARADE ⬍</th>
+                            <th data-col="1">ÉCART ⬍</th>
+                            <th data-col="2">VALEUR LORGA ⬍</th>
+                            <th data-col="3">VALEUR COGITIEL ⬍</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body-ecarts"></tbody>
+                </table>
+            </div>
         `;
         this.interfaceGeneree = true;
+    },
+
+    basculerPleinEcran: function() {
+        const wrap = document.getElementById('conteneur-table-ecarts');
+        const btn = document.getElementById('btn-fullscreen-ecarts');
+        if (!wrap || !btn) return;
+        
+        wrap.classList.toggle('plein-ecran');
+        if (wrap.classList.contains('plein-ecran')) {
+            btn.classList.add('bouton-plein-ecran-flottant');
+            btn.innerText = "QUITTER PLEIN ÉCRAN";
+        } else {
+            btn.classList.remove('bouton-plein-ecran-flottant');
+            btn.innerText = "PLEIN ÉCRAN";
+        }
     },
 
     indexerSource: function(nomSource) {
@@ -87,15 +111,21 @@ const UtilitaireAlertesEcarts = {
     },
 
     lancerAnalyse: function() {
-        const mapLorga = this.indexerSource('lorga');
-        const mapCogitiel = this.indexerSource('cogitiel');
         const tbody = document.getElementById('table-body-ecarts');
+        const statut = document.getElementById('statut-analyse-ecarts');
+        if (!tbody) return;
         tbody.innerHTML = '';
 
-        if (!mapLorga || !mapCogitiel) {
-            alert("Erreur : Chargez deux fichiers sources minimum.");
+        const aLorga = UtilitaireExcel.sources.lorga && UtilitaireExcel.sources.lorga.donnees.length > 0;
+        const aCogitiel = UtilitaireExcel.sources.cogitiel && UtilitaireExcel.sources.cogitiel.donnees.length > 0;
+
+        if (!aLorga || !aCogitiel) {
+            if (statut) statut.innerText = "Pense à charger au moins Lorga et Cogitiel dans « Imports Exports Excel » camarade.";
             return;
         }
+
+        const mapLorga = this.indexerSource('lorga');
+        const mapCogitiel = this.indexerSource('cogitiel');
 
         const tousLesAgents = Array.from(new Set([...mapLorga.keys(), ...mapCogitiel.keys()]));
         
@@ -117,6 +147,11 @@ const UtilitaireAlertesEcarts = {
             this.comparerChamp(dataL.nomOriginal, "Adresse", dataL.adresse, dataC.adresse);
             this.comparerChamp(dataL.nomOriginal, "Civilité", this.normaliserCivilite(dataL.sexe), this.normaliserCivilite(dataC.sexe));
         });
+
+        const totalLignes = tbody.rows.length;
+        if (statut) {
+            statut.innerText = totalLignes > 0 ? `${totalLignes} écart(s) détecté(s).` : "Aucun écart détecté entre les fichiers.";
+        }
     },
 
     comparerChamp: function(nom, type, valL, valC) {
@@ -130,7 +165,28 @@ const UtilitaireAlertesEcarts = {
 
     ajouterLigne: function(nom, type, valL, valC) {
         const tbody = document.getElementById('table-body-ecarts');
-        tbody.innerHTML += `<tr><td>${nom}</td><td style="color:red; font-weight:bold;">${type}</td><td>${valL}</td><td>${valC}</td></tr>`;
+        if (!tbody) return;
+
+        const tr = document.createElement('tr');
+
+        const tdNom = document.createElement('td');
+        tdNom.textContent = nom;
+
+        const tdType = document.createElement('td');
+        tdType.className = "cellule-ecart";
+        tdType.textContent = type;
+
+        const tdValL = document.createElement('td');
+        tdValL.textContent = valL;
+
+        const tdValC = document.createElement('td');
+        tdValC.textContent = valC;
+
+        tr.appendChild(tdNom);
+        tr.appendChild(tdType);
+        tr.appendChild(tdValL);
+        tr.appendChild(tdValC);
+        tbody.appendChild(tr);
     },
 
     trierTable: function(event) {
@@ -145,7 +201,7 @@ const UtilitaireAlertesEcarts = {
     },
 
     exporterExcel: function() {
-        let csv = "\ufeff" + "AGENT;ECART;LORGA;COGITIEL\n";
+        let csv = "\ufeff" + "CAMARADE;ÉCART;LORGA;COGITIEL\n";
         document.querySelectorAll("#table-body-ecarts tr").forEach(row => {
             const cols = Array.from(row.cells).map(c => `"${c.innerText.replace(/"/g, '""')}"`);
             csv += cols.join(";") + "\n";

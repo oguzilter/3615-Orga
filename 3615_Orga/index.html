@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3615 Orga CGT Cheminot·e·s et ONCF</title>
+    <style>
+        :root {
+            --couleur-primaire: #CC0000;
+            --couleur-secondaire: #FFCC00;
+            --noir: #111111;
+            --fond-page: #F4F4F4;
+            --gris-diag-texte: #555555;
+            --gris-diag-fond: #E9E9E9;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--fond-page);
+            color: var(--noir);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .bandeau-entete {
+            background-color: var(--couleur-primaire);
+            color: var(--couleur-secondaire);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--noir);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .bandeau-entete h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 2px;
+        }
+
+        .version-badge {
+            background-color: var(--noir);
+            color: var(--couleur-secondaire);
+            padding: 5px 10px;
+            font-weight: bold;
+            border: 1px solid var(--couleur-secondaire);
+            font-size: 13px;
+        }
+
+        .version-badge.maj-dispo {
+            background-color: var(--couleur-primaire);
+            border: 1px solid var(--couleur-secondaire);
+            cursor: pointer;
+        }
+
+        .version-badge.hors-ligne {
+            background-color: var(--noir);
+            color: #777777;
+        }
+
+        .lien-maj {
+            color: var(--couleur-secondaire);
+            text-decoration: none;
+        }
+
+        .conteneur-central {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            gap: 20px;
+        }
+
+        .alerte-navigateur {
+            display: none;
+            background-color: #4A0018;
+            color: var(--couleur-secondaire);
+            border: 2px solid var(--noir);
+            border-left: 6px solid var(--couleur-primaire);
+            padding: 14px 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 480px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .boite-actions {
+            background-color: #FFFFFF;
+            border: 3px solid var(--noir);
+            box-shadow: 8px 8px 0 var(--noir);
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 480px;
+            width: 100%;
+            box-sizing: border-box;
+            align-items: center;
+        }
+
+        .bouton-action {
+            background-color: var(--noir);
+            color: var(--couleur-secondaire);
+            border: 2px solid var(--couleur-secondaire);
+            padding: 14px 20px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .bouton-action:hover {
+            background-color: var(--couleur-secondaire);
+            color: var(--noir);
+            border-color: var(--noir);
+        }
+
+        .barre-bas {
+            background-color: var(--gris-diag-fond);
+            color: var(--gris-diag-texte);
+            padding: 10px 20px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .zone-boutons-tests {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bouton-discret {
+            background: none;
+            border: none;
+            color: var(--gris-diag-texte);
+            opacity: 0.35;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+
+        .bouton-discret:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .zone-diagnostic-bas {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            line-height: 1.4;
+        }
+
+        .merci-brent {
+            font-weight: bold;
+            color: #222222;
+        }
+
+        .modale-paix {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .boite-paix {
+            background-color: #FFFFFF;
+            border: 4px solid var(--couleur-primaire);
+            box-shadow: 10px 10px 0 var(--noir);
+            max-width: 650px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 25px 30px;
+            box-sizing: border-box;
+            color: var(--noir);
+            line-height: 1.6;
+        }
+
+        .boite-paix h3 {
+            margin-top: 0;
+            color: var(--couleur-primaire);
+            font-size: 18px;
+            border-bottom: 2px solid var(--noir);
+            padding-bottom: 8px;
+            text-align: center;
+        }
+
+        .citation-paix {
+            margin-bottom: 18px;
+            font-size: 14px;
+            border-left: 3px solid var(--couleur-secondaire);
+            padding-left: 12px;
+            white-space: pre-line;
+        }
+
+        .auteur-paix {
+            font-weight: bold;
+            color: var(--couleur-primaire);
+        }
+
+        .bouton-fermer-paix {
+            margin-top: 15px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header id="bandeau-entete" class="bandeau-entete">
+        <h1 id="titre-principal">3615 ORGA CGT CHEMINOT·E·S ET ONCF</h1>
+        <div id="version-display" class="version-badge"></div>
+    </header>
+
+    <main class="conteneur-central">
+        <div id="alerte-navigateur" class="alerte-navigateur">
+            Attention camarade, ton navigateur (<span id="info-nom-nav">...</span>) semble ancien ou non conforme. Pour un fonctionnement sans bug, mets-le à jour (Chrome, Firefox, Edge).
+        </div>
+
+        <div class="boite-actions">
+            <a id="btn-ouvrir-ligne" href="https://oguzilter.github.io/3615-Orga/3615_Orga.html" target="_blank" class="bouton-action">OUVRIR LE LOGICIEL EN LIGNE</a>
+            <a id="btn-ouvrir-local" href="3615_Orga.html" class="bouton-action">OUVRIR LE LOGICIEL EN LOCAL</a>
+            <a id="btn-telechargement" href="https://github.com/oguzilter/3615-Orga/archive/refs/heads/main.zip" class="bouton-action">TÉLÉCHARGER LE ZIP HORS-LIGNE</a>
+        </div>
+    </main>
+
+    <footer class="barre-bas">
+        <div class="zone-boutons-tests">
+            <button id="btn-toggle-alerte" class="bouton-discret" onclick="basculerAlerteTest()">[test alerte]</button>
+            <button id="btn-toggle-mode" class="bouton-discret" onclick="basculerModeTest()">[test en ligne - local]</button>
+        </div>
+        <div class="zone-diagnostic-bas">
+            <span id="diag-nav">Nav : ...</span>
+            <span id="diag-moteur">Moteur : ...</span>
+            <span id="diag-os">OS : ...</span>
+            <span id="diag-ecran">Écran : ...</span>
+            <span id="diag-vue">Fenêtre : ...</span>
+            <span id="diag-pixel-ratio">Ratio : ...</span>
+            <span id="diag-cpu">CPU : ...</span>
+            <span id="diag-ram">RAM : ...</span>
+            <span id="diag-tactile">Tactile : ...</span>
+            <span id="diag-cookies">Cookies : ...</span>
+            <span id="diag-lang">Langue : ...</span>
+            <span id="diag-fuseau">Fuseau : ...</span>
+            <span id="diag-proto">Proto : ...</span>
+            <span id="diag-reseau">Réseau : ...</span>
+            <span id="diag-ip">IP : Recherche...</span>
+            <span id="diag-ping">Ping : ...</span>
+            <span id="diag-statut">Compatibilité : ...</span>
+            <span class="merci-brent">- Merci au camarade Brent pour le portail 🍉</span>
+        </div>
+    </footer>
+
+    <div id="modale-paix" class="modale-paix">
+        <div class="boite-paix">
+            <h3>🕊️ MESSAGES POUR LA PAIX</h3>
+            <div class="citation-paix">« Il n'y a pas de chemin vers la paix,
+la paix est le chemin. »
+<span class="auteur-paix">Mahatma Gandhi</span></div>
+
+            <div class="citation-paix">« Nous devons vivre ensemble comme des frères,
+sinon nous périrons ensemble comme des imbéciles. »
+<span class="auteur-paix">Martin Luther King Jr.</span></div>
+
+            <div class="citation-paix">« La paix est la vertu de la civilisation.
+La guerre en est le crime. »
+<span class="auteur-paix">Victor Hugo</span></div>
+
+            <div class="citation-paix">« La paix dans le monde passe d'abord par la paix individuelle.
+Celui qui est naturellement en paix avec lui-même
+sera en paix avec les autres. »
+<span class="auteur-paix">Dalaï-Lama</span></div>
+
+            <div class="citation-paix">« La paix ne peut être maintenue par la force,
+elle ne peut être atteinte que par la compréhension. »
+<span class="auteur-paix">Albert Einstein</span></div>
+
+            <button class="bouton-action bouton-fermer-paix" onclick="fermerModalePaix()">FERMER</button>
+        </div>
+    </div>
+
+    <script src="logiciel/config/infos.js"></script>
+    <script>
+        let modeSimuleLocal = null;
+        let compteurClicsBandeau = 0;
+        let timerClicsBandeau = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initEasterEgg();
+            analyserClientComplet();
+            ajusterBoutonsEnvironnement();
+            recupererIp();
+            mesurerPing();
+            verifierMiseAJour();
+        });
+
+        function initEasterEgg() {
+            const bandeau = document.getElementById("bandeau-entete");
+            if (!bandeau) return;
+
+            bandeau.addEventListener("click", () => {
+                compteurClicsBandeau++;
+                clearTimeout(timerClicsBandeau);
+                timerClicsBandeau = setTimeout(() => {
+                    compteurClicsBandeau = 0;
+                }, 4000);
+
+                if (compteurClicsBandeau >= 10) {
+                    compteurClicsBandeau = 0;
+                    declencherEasterEgg();
+                }
+            });
+        }
+
+        function declencherEasterEgg() {
+            const modale = document.getElementById("modale-paix");
+            if (modale) modale.style.display = "flex";
+            window.open("https://www.youtube.com/watch?v=Ts0XSyWpMnU", "_blank");
+        }
+
+        function fermerModalePaix() {
+            const modale = document.getElementById("modale-paix");
+            if (modale) modale.style.display = "none";
+        }
+
+        function estEnLocalReel() {
+            return window.location.protocol === 'file:' || 
+                   window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1';
+        }
+
+        function ajusterBoutonsEnvironnement() {
+            const btnLocal = document.getElementById("btn-ouvrir-local");
+            if (!btnLocal) return;
+
+            const actifEnLocal = (modeSimuleLocal !== null) ? modeSimuleLocal : estEnLocalReel();
+            btnLocal.style.display = actifEnLocal ? "block" : "none";
+
+            const elProto = document.getElementById("diag-proto");
+            const elReseau = document.getElementById("diag-reseau");
+
+            if (modeSimuleLocal !== null) {
+                if (elProto) elProto.innerText = "Proto : " + (modeSimuleLocal ? "file [test]" : "https [test]");
+                if (elReseau) elReseau.innerText = "Réseau : " + (modeSimuleLocal ? "hors ligne [test]" : "en ligne [test]");
+            }
+        }
+
+        function analyserClientComplet() {
+            const ua = navigator.userAgent;
+            let nomNav = "Inconnu";
+            let estConforme = true;
+
+            const isIE = ua.indexOf("MSIE ") > -1 || ua.indexOf("Trident/") > -1;
+            if (isIE) {
+                nomNav = "Internet Explorer";
+                estConforme = false;
+            } else {
+                const edgeMatch = ua.match(/Edg\/(\d+)/);
+                const chromeMatch = ua.match(/Chrome\/(\d+)/);
+                const firefoxMatch = ua.match(/Firefox\/(\d+)/);
+                const safariMatch = ua.match(/Version\/(\d+).*Safari/);
+
+                if (edgeMatch) {
+                    nomNav = "Edge " + edgeMatch[1];
+                    if (parseInt(edgeMatch[1], 10) < 90) estConforme = false;
+                } else if (chromeMatch) {
+                    nomNav = "Chrome " + chromeMatch[1];
+                    if (parseInt(chromeMatch[1], 10) < 90) estConforme = false;
+                } else if (firefoxMatch) {
+                    nomNav = "Firefox " + firefoxMatch[1];
+                    if (parseInt(firefoxMatch[1], 10) < 88) estConforme = false;
+                } else if (safariMatch) {
+                    nomNav = "Safari " + safariMatch[1];
+                    if (parseInt(safariMatch[1], 10) < 14) estConforme = false;
+                }
+            }
+
+            let moteur = "Autre";
+            if (ua.indexOf("Blink") !== -1 || (ua.indexOf("Chrome") !== -1 && ua.indexOf("Safari") !== -1)) moteur = "Blink";
+            else if (ua.indexOf("Gecko") !== -1 && ua.indexOf("Firefox") !== -1) moteur = "Gecko";
+            else if (ua.indexOf("AppleWebKit") !== -1) moteur = "WebKit";
+
+            let os = "Inconnu";
+            if (ua.indexOf("Win") !== -1) os = "Windows";
+            else if (ua.indexOf("Mac") !== -1) os = "macOS";
+            else if (ua.indexOf("Linux") !== -1) os = "Linux";
+            else if (ua.indexOf("Android") !== -1) os = "Android";
+            else if (ua.indexOf("like Mac") !== -1) os = "iOS";
+
+            const supportModules = window.fetch && document.querySelector && window.Map && window.Set && window.FileReader;
+            if (!supportModules) {
+                estConforme = false;
+            }
+
+            const orient = (screen.orientation && screen.orientation.type) ? (screen.orientation.type.includes('portrait') ? 'Port.' : 'Pays.') : '';
+            const reseauType = navigator.connection ? (navigator.connection.effectiveType || navigator.connection.type || "actif") : (navigator.onLine ? "en ligne" : "hors ligne");
+            const fuseau = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+            const tactile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) ? "Oui" : "Non";
+            const protoActuel = location.protocol.replace(':', '') || "local";
+
+            document.getElementById("diag-nav").innerText = "Nav : " + nomNav;
+            document.getElementById("diag-moteur").innerText = "Moteur : " + moteur;
+            document.getElementById("diag-os").innerText = "OS : " + os;
+            document.getElementById("diag-ecran").innerText = "Écran : " + screen.width + "x" + screen.height + (orient ? " (" + orient + ")" : "");
+            document.getElementById("diag-vue").innerText = "Fenêtre : " + window.innerWidth + "x" + window.innerHeight;
+            document.getElementById("diag-pixel-ratio").innerText = "Ratio : " + (window.devicePixelRatio || 1) + "x";
+            document.getElementById("diag-cpu").innerText = "CPU : " + (navigator.hardwareConcurrency || "N/A") + " cœurs";
+            document.getElementById("diag-ram").innerText = "RAM : " + (navigator.deviceMemory ? navigator.deviceMemory + " Go" : "N/A");
+            document.getElementById("diag-tactile").innerText = "Tactile : " + tactile;
+            document.getElementById("diag-cookies").innerText = "Cookies : " + (navigator.cookieEnabled ? "Oui" : "Non");
+            document.getElementById("diag-lang").innerText = "Langue : " + (navigator.language || "fr");
+            document.getElementById("diag-fuseau").innerText = "Zone : " + fuseau;
+            document.getElementById("diag-proto").innerText = "Proto : " + protoActuel;
+            document.getElementById("diag-reseau").innerText = "Réseau : " + reseauType;
+            document.getElementById("diag-statut").innerText = estConforme ? "Compatibilité : OK" : "Compatibilité : Obsolète";
+
+            const elNomNavAlerte = document.getElementById("info-nom-nav");
+            if (elNomNavAlerte) elNomNavAlerte.innerText = nomNav;
+
+            if (!estConforme) {
+                const alerteEl = document.getElementById("alerte-navigateur");
+                if (alerteEl) alerteEl.style.display = "block";
+            }
+        }
+
+        function basculerAlerteTest() {
+            const alerte = document.getElementById("alerte-navigateur");
+            if (!alerte) return;
+            alerte.style.display = (alerte.style.display === "block") ? "none" : "block";
+        }
+
+        function basculerModeTest() {
+            if (modeSimuleLocal === null) {
+                modeSimuleLocal = !estEnLocalReel();
+            } else {
+                modeSimuleLocal = !modeSimuleLocal;
+            }
+            ajusterBoutonsEnvironnement();
+        }
+
+        async function mesurerPing() {
+            const pingEl = document.getElementById("diag-ping");
+            if (!pingEl) return;
+
+            const tDebut = performance.now();
+            try {
+                await fetch("https://api.github.com", { method: "HEAD", mode: "no-cors", cache: "no-store" });
+                const temps = Math.round(performance.now() - tDebut);
+                pingEl.innerText = "Ping GitHub : " + temps + " ms";
+            } catch (err) {
+                pingEl.innerText = "Ping GitHub : Injoignable";
+            }
+        }
+
+        async function recupererIp() {
+            const ipEl = document.getElementById("diag-ip");
+            try {
+                const reponse = await fetch("https://api.ipify.org?format=json");
+                if (reponse.ok) {
+                    const data = await reponse.json();
+                    ipEl.innerText = "IP : " + data.ip;
+                } else {
+                    ipEl.innerText = "IP : Injoignable";
+                }
+            } catch (err) {
+                ipEl.innerText = "IP : Hors-ligne";
+            }
+        }
+
+        async function verifierMiseAJour() {
+            const versionBadge = document.getElementById('version-display');
+            const btnTelechargement = document.getElementById('btn-telechargement');
+            if (!versionBadge) return;
+
+            const versionActuelle = (typeof CONFIG_INFOS !== 'undefined' && CONFIG_INFOS.version_actuelle) ? CONFIG_INFOS.version_actuelle : "0.9.1";
+            const repo = (typeof CONFIG_INFOS !== 'undefined' && CONFIG_INFOS.repo_github) ? CONFIG_INFOS.repo_github : "oguzilter/3615-Orga";
+            const urlApi = `https://api.github.com/repos/${repo}/releases/latest`;
+
+            try {
+                const response = await fetch(urlApi);
+                const data = await response.json();
+
+                if (data.zipball_url && btnTelechargement) {
+                    btnTelechargement.href = data.zipball_url;
+                }
+
+                const tagEnLigne = (data.tag_name || "").replace(/^v/, '');
+                const verLocale = versionActuelle.replace(/^v/, '');
+
+                if (tagEnLigne && tagEnLigne > verLocale) {
+                    versionBadge.innerHTML = `<a href="${data.zipball_url}" class="lien-maj">v${versionActuelle}, TÉLÉCHARGER LA MISE À JOUR DISPONIBLE VERS V${data.tag_name}</a>`;
+                    versionBadge.classList.add('maj-dispo');
+                    versionBadge.classList.remove('hors-ligne');
+                } else {
+                    versionBadge.innerText = `v${versionActuelle}`;
+                    versionBadge.classList.remove('maj-dispo', 'hors-ligne');
+                }
+            } catch (err) {
+                versionBadge.innerText = `v${versionActuelle} - HORS LIGNE`;
+                versionBadge.classList.add('hors-ligne');
+                versionBadge.classList.remove('maj-dispo');
+            }
+        }
+    </script>
+</body>
+</html>

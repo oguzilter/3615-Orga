@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3615 Orga CGT Cheminot·e·s et ONCF</title>
+    <link rel="stylesheet" href="logiciel/css/style_base.css">
+    <link id="theme-cgt" rel="stylesheet" href="logiciel/css/style_cgt.css">
+    <link id="theme-oncf" rel="stylesheet" href="logiciel/css/style_oncf.css" disabled>
+</head>
+<body>
+    <header id="bandeau-entete" class="bandeau-cgt">
+        <div class="bandeau-gauche">
+            <button id="btn-toggle-menu" class="bouton-toggle-menu" title="Afficher / Masquer le menu">☰</button>
+            <h1 id="titre-principal">3615 ORGA CGT CHEMINOT·E·S</h1>
+        </div>
+        <div id="version-display" class="version-badge"></div>
+    </header>
+
+    <div class="container">
+        <nav id="menu-lateral" class="menu-lateral"></nav>
+
+        <main id="zone-travail" class="zone-contenu">
+            <div id="accueil" class="vue-section vue-centree">
+                <div class="selecteur-univers">
+                    <button id="btn-choix-cgt" class="bouton-action actif">CGT CHEMINOT·E·S</button>
+                    <button id="btn-choix-oncf" class="bouton-action">ONCF</button>
+                </div>
+                <div class="zone-logo-accueil">
+                    <img id="logo-principal" src="logiciel/medias/logo_cgt_cdw.gif" alt="Logo" class="logo-CGT">
+                </div>
+            </div>
+
+            <div id="util_excel" class="vue-section section-cachee"></div>
+            <div id="util_point_orga" class="vue-section section-cachee"></div>
+            <div id="util_com_orga" class="vue-section section-cachee"></div>
+            <div id="util_alertes_ecarts" class="vue-section section-cachee"></div>
+            <div id="util_alertes_retraites" class="vue-section section-cachee"></div>
+            <div id="util_alertes_mails_pros" class="vue-section section-cachee"></div>
+            <div id="faq" class="vue-section section-cachee"></div>
+            <div id="infos" class="vue-section section-cachee"></div>
+        </main>
+    </div>
+
+    <script src="logiciel/lib/xlsx.full.min.js"></script>
+    <script src="logiciel/config/infos.js"></script>
+    <script src="logiciel/config/menu.js"></script>
+    <script src="logiciel/config/modele_mail.js"></script>
+    <script src="logiciel/utilitaires/util_modal_cci.js"></script>
+    <script src="logiciel/utilitaires/util_excel.js"></script>
+    <script src="logiciel/utilitaires/util_point_orga.js"></script>
+    <script src="logiciel/utilitaires/util_com_orga.js"></script>
+    <script src="logiciel/utilitaires/util_alertes_ecarts.js"></script>
+    <script src="logiciel/utilitaires/util_alertes_retraites.js"></script>
+    <script src="logiciel/utilitaires/util_alertes_mails_pros.js"></script>
+    <script src="logiciel/config/faq.js"></script>
+    <script src="logiciel/utilitaires/util_faq.js"></script>
+    <script src="logiciel/utilitaires/util_infos.js"></script>
+    <script src="logiciel/config/main.js"></script>
+</body>
+</html>

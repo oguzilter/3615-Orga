@@ -9,36 +9,75 @@ const UtilitaireAlertesMailsPros = {
     genererInterface: function(conteneurId) {
         if (this.interfaceGeneree) return;
         const conteneur = document.getElementById(conteneurId);
+        if (!conteneur) return;
         
         conteneur.innerHTML = `
             <h2>AFFICHAGE DE L'UTILISATION DES ADRESSES MAILS PROFESSIONNELLES</h2>
-            <div style="margin-bottom:15px; display:flex; gap:10px;">
-                <button onclick="UtilitaireAlertesMailsPros.lancerAnalyse()" class="bouton-action">LANCER L'ANALYSE</button>
-                <button onclick="UtilitaireAlertesMailsPros.exporterExcel()" class="bouton-action" style="background-color:#28a745;">EXPORT EXCEL (.csv)</button>
+            <div class="barre-actions">
+                <div class="groupe-actions-gauche">
+                    <button onclick="UtilitaireAlertesMailsPros.lancerAnalyse()" class="bouton-action">LANCER L'ANALYSE</button>
+                    <button id="btn-fullscreen-mails" onclick="UtilitaireAlertesMailsPros.basculerPleinEcran()" class="bouton-action">PLEIN ÉCRAN</button>
+                </div>
+                <div class="groupe-actions-droite">
+                    <button id="btn-cci-mails" onclick="UtilitaireAlertesMailsPros.envoyerMailGroupe()" class="bouton-action bouton-bleu">ENVOI GROUPÉ (CCI)</button>
+                    <button onclick="UtilitaireAlertesMailsPros.exporterExcel()" class="bouton-action bouton-export">EXPORT EXCEL (.csv)</button>
+                </div>
             </div>
-            <table id="table-mails" class="table-cgt" style="width:100%; cursor:pointer;">
-                <thead>
-                    <tr onclick="UtilitaireAlertesMailsPros.trierTable(event)">
-                        <th data-col="0">AGENT ⬍</th>
-                        <th data-col="1">SOURCE(S) ⬍</th>
-                        <th data-col="2">EMAIL PROS (SNCF) ⬍</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body-mails"></tbody>
-            </table>
+            <div id="statut-analyse-mails" class="statut-analyse"></div>
+            <div id="conteneur-table-mails" class="conteneur-table">
+                <table id="table-mails" class="table-cgt">
+                    <thead>
+                        <tr onclick="UtilitaireAlertesMailsPros.trierTable(event)">
+                            <th data-col="0">CAMARADE ⬍</th>
+                            <th data-col="1">SOURCE(S) ⬍</th>
+                            <th data-col="2">EMAIL PRO (SNCF) ⬍</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body-mails"></tbody>
+                </table>
+            </div>
         `;
         this.interfaceGeneree = true;
     },
 
+    basculerPleinEcran: function() {
+        const wrap = document.getElementById('conteneur-table-mails');
+        const btn = document.getElementById('btn-fullscreen-mails');
+        if (!wrap || !btn) return;
+
+        wrap.classList.toggle('plein-ecran');
+        if (wrap.classList.contains('plein-ecran')) {
+            btn.classList.add('bouton-plein-ecran-flottant');
+            btn.innerText = "QUITTER PLEIN ÉCRAN";
+        } else {
+            btn.classList.remove('bouton-plein-ecran-flottant');
+            btn.innerText = "PLEIN ÉCRAN";
+        }
+    },
+
+    envoyerMailGroupe: function() {
+        if (typeof UtilitaireModalCci !== "undefined") {
+            UtilitaireModalCci.ouvrir();
+        }
+    },
+
     lancerAnalyse: function() {
         const tbody = document.getElementById('table-body-mails');
+        const statut = document.getElementById('statut-analyse-mails');
+        if (!tbody) return;
         tbody.innerHTML = '';
+
+        const sourcesChargees = Object.keys(UtilitaireExcel.sources).filter(k => UtilitaireExcel.sources[k].donnees && UtilitaireExcel.sources[k].donnees.length > 0);
+
+        if (sourcesChargees.length === 0) {
+            if (statut) statut.innerText = "Pense à charger au moins un fichier dans « Imports Exports Excel » camarade.";
+            return;
+        }
+
         const agentsMap = new Map();
 
-        Object.keys(UtilitaireExcel.sources).forEach(nomSource => {
+        sourcesChargees.forEach(nomSource => {
             const data = UtilitaireExcel.sources[nomSource];
-            if (!data.donnees || data.donnees.length === 0) return;
-
             const enTetes = data.enTetes.map(h => this.nettoyerTexte(h));
             
             let idxEmail = -1, idxNom = -1, idxPrenom = -1;
@@ -55,9 +94,10 @@ const UtilitaireAlertesMailsPros = {
             if (idxEmail === -1) return;
 
             data.donnees.forEach(ligne => {
-                const mail = (ligne[idxEmail] || "").toString().toLowerCase();
+                const mail = (ligne[idxEmail] || "").toString().trim().toLowerCase();
+                const partiesMail = mail.split('@');
                 
-                if (mail.includes('sncf')) {
+                if (partiesMail.length > 1 && partiesMail[1].includes('sncf')) {
                     let nomComplet = "";
                     if (nomSource === 'cogitiel') {
                         const nom = (ligne[idxNom] || "").toString().trim();
@@ -78,17 +118,46 @@ const UtilitaireAlertesMailsPros = {
         });
 
         const listeAgents = Array.from(agentsMap.values());
+
+        if (listeAgents.length === 0) {
+            if (statut) statut.innerText = "Aucune adresse mail SNCF trouvée.";
+            return;
+        }
+
         listeAgents.sort((a, b) => a.nom.localeCompare(b.nom));
 
         listeAgents.forEach(agent => {
             const sourcesJointes = Array.from(agent.sources).join(' + ');
             this.ajouterLigne(agent.nom, sourcesJointes, agent.email);
         });
+
+        if (statut) {
+            statut.innerText = `${listeAgents.length} camarade(s) avec une adresse mail SNCF.`;
+        }
     },
 
     ajouterLigne: function(nom, sources, mail) {
         const tbody = document.getElementById('table-body-mails');
-        tbody.innerHTML += `<tr><td>${nom}</td><td>${sources}</td><td>${mail}</td></tr>`;
+        if (!tbody) return;
+
+        const tr = document.createElement('tr');
+
+        const tdNom = document.createElement('td');
+        tdNom.textContent = nom;
+
+        const tdSources = document.createElement('td');
+        tdSources.textContent = sources;
+
+        const tdMail = document.createElement('td');
+        const lien = document.createElement('a');
+        lien.href = `mailto:${mail}`;
+        lien.textContent = mail;
+        tdMail.appendChild(lien);
+
+        tr.appendChild(tdNom);
+        tr.appendChild(tdSources);
+        tr.appendChild(tdMail);
+        tbody.appendChild(tr);
     },
 
     trierTable: function(event) {
@@ -103,7 +172,7 @@ const UtilitaireAlertesMailsPros = {
     },
 
     exporterExcel: function() {
-        let csv = "\ufeff" + "AGENT;SOURCE;EMAIL\n";
+        let csv = "\ufeff" + "CAMARADE;SOURCE;EMAIL\n";
         document.querySelectorAll("#table-body-mails tr").forEach(row => {
             const cols = Array.from(row.cells).map(c => `"${c.innerText.replace(/"/g, '""')}"`);
             csv += cols.join(";") + "\n";
