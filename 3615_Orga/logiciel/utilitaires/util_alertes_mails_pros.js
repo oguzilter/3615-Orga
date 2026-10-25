@@ -77,11 +77,9 @@ const UtilitaireAlertesMailsPros = {
             });
         });
 
-        // Conversion en tableau et Tri alphabétique par nom
         const listeAgents = Array.from(agentsMap.values());
         listeAgents.sort((a, b) => a.nom.localeCompare(b.nom));
 
-        // Affichage après tri
         listeAgents.forEach(agent => {
             const sourcesJointes = Array.from(agent.sources).join(' + ');
             this.ajouterLigne(agent.nom, sourcesJointes, agent.email);
